@@ -6,14 +6,12 @@ var logger = require('morgan');
 var bodyparser = require('body-parser');
 var mongoose = require('mongoose');
 var colors = require('colors');
-var passport = require('passport');
-var session = require('express-session')
 
 
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(config.database);
+mongoose.connect('mongodb://localhost/preppost');
 
 mongoose.connection.once('open', function(){
   console.log('Conenction to the database successful!'.cyan);
@@ -21,18 +19,13 @@ mongoose.connection.once('open', function(){
 
 var app = express();
 
-// required for passport
-app.use(session({ secret: 'goforthandsettheworldonfire' })); // session secret
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json())
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 
-require('./app/routes.js')(app, passport);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -40,8 +33,8 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Initialize passport
-app.use(passport.initialize());
+app.use('/', require('./routes/index'));
+app.use('/user', require('./routes/users'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

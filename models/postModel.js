@@ -9,10 +9,14 @@ const TemplateAttachmentSchema = new Schema({
 
 const PostSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    title: {type: String, required: true},
+    title: {
+        type: String,
+        required: true
+    },
     content: String,
     attachments: [TemplateImgSchema]
-},
-    {timestamps: true});
+}, {
+    timestamps: true
+});
 
 module.exports = mongoose.model('PrepPosts', PostSchema);
