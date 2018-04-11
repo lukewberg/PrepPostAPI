@@ -5,6 +5,8 @@ var userModel = require('../models/userModel');
 var mongoose = require('mongoose');
 var color = require('colors')
 var jwt = require('jsonwebtoken')
+var authenticate = require('../middleware/user-auth')
+var config = require('../config.json')
 
 var userFunctions = {
 
@@ -24,7 +26,7 @@ var userFunctions = {
               jwt.sign({
                 email: user[0].email,
                 _id: user[0]._id
-              }, '**goforthandsettheworldonfire**', {
+              }, config.env.JWT_KEY, {
                 expiresIn: '1h'
               }, function (error, token) {
                 if (token) {
@@ -107,6 +109,6 @@ router.route('/login')
   .post(userFunctions.login)
 
 router.route('/delete/:userID')
-  .get(userFunctions.delete)
+  .get(authenticate, userFunctions.delete)
 
   module.exports = router;
