@@ -5,7 +5,7 @@ module.exports = function(req, res, next){
         var token = req.headers.authorization.split(' ')[1]
         var decoded = jwt.verify(token, config.env.JWT_KEY)
         req.userData = decoded
-        console.log('Authenticated ' +req.email.green)
+        console.log('Authenticated user!'.green)
         next()
     }catch(error){
         console.log(error.message.red)

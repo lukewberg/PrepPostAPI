@@ -10,6 +10,24 @@ var config = require('../config.json')
 
 var userFunctions = {
 
+  findOne: function (req, res) {
+
+    userModel.find({
+        [req.params.property]: req.params.value
+      })
+      .exec()
+      .then(function (doc) {
+        console.log('Successfully handled get query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
+
   // This function will handle user login and will issue a token when successfully authenticated
   login: function (req, res) {
     userModel.find({
@@ -91,11 +109,11 @@ var userFunctions = {
         _id: req.params.userID
       })
       .then(function (doc) {
-        console.log('Successfully deleted user!'.green)
+        console.log('Successfully deleted user!')
         res.status(200).json(doc)
       })
       .catch(function (error) {
-        console.log(error.red)
+        console.log(error.message.red)
         res.status(500).json(error.message)
       })
   }
@@ -111,4 +129,7 @@ router.route('/login')
 router.route('/delete/:userID')
   .get(authenticate, userFunctions.delete)
 
-  module.exports = router;
+router.route('/find/:property/:value')
+  .get(authenticate, userFunctions.findOne)
+
+module.exports = router;
