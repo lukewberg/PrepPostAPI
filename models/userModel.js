@@ -12,6 +12,10 @@ const UserSchema = new Schema({
     password: {
         type: String,
         require: true
+    },
+    rank: {
+        // Must be either student, teacher, moderator, or administrator
+        type: String
     }
 }, {
     timestamps: true
