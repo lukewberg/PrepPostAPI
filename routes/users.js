@@ -10,11 +10,43 @@ var config = require('../config.json')
 
 var userFunctions = {
 
+  // TODO: This function needs to return the modified version of the document that it edited, not the original
+  // This function takes the _id value of a user, and updates it's fields with the ones supplied in the payload
+  update: function (req, res) {
+
+    userModel.findByIdAndUpdate(req.params._id, req.body)
+      .then(function (doc) {
+        console.log('Successfully handled up date query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
+
+  // This function simply finds all users in the database and returns them in the response
+  findAll: function (req, res) {
+    userModel.find()
+      .exec()
+      .then(function (doc) {
+        console.log('Successfully handled getAll query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
+
+  // This function finds one user based on that users unique _id key
   findOne: function (req, res) {
 
-    userModel.find({
-        [req.params.property]: req.params.value
-      })
+    userModel.findById(req.params._id)
       .exec()
       .then(function (doc) {
         console.log('Successfully handled get query!'.green)
@@ -129,7 +161,13 @@ router.route('/login')
 router.route('/delete/:userID')
   .get(authenticate, userFunctions.delete)
 
-router.route('/find/:property/:value')
+router.route('/find/:_id')
   .get(authenticate, userFunctions.findOne)
+
+router.route('/find')
+  .get(authenticate, userFunctions.findAll)
+
+  router.route('/update/:_id')
+    .patch(authenticate, userFunctions.update)
 
 module.exports = router;
