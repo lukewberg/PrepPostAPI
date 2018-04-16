@@ -21,4 +21,4 @@ const UserSchema = new Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('PrepPosts', UserSchema);
+module.exports = mongoose.model('users', UserSchema);

@@ -9,14 +9,28 @@ const TemplateAttachmentSchema = new Schema({
 
 const PostSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
+    postedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'UserSchema'
+    },
     title: {
         type: String,
         required: true
     },
-    content: String,
-    attachments: [TemplateImgSchema]
+    content: {
+        type: String,
+        required: true
+    },
+    comments: [{
+        body: String,
+        postedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'userSchema'
+        }
+    }]
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('PrepPosts', PostSchema);
+module.exports = mongoose.model('posts', PostSchema);
