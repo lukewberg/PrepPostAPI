@@ -1,20 +1,18 @@
-var express = require('express');
-var router = express.Router();
-var bcrypt = require('bcrypt');
-var userModel = require('../models/userModel');
-var mongoose = require('mongoose');
-var color = require('colors')
-var jwt = require('jsonwebtoken')
-var authenticate = require('../middleware/user-auth')
-var config = require('../config.json')
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const userModel = require('../models/userModel');
+const mongoose = require('mongoose');
+const color = require('colors')
+const jwt = require('jsonwebtoken')
+const authenticate = require('../middleware/user-auth')
+const config = require('../config.json')
 
 var userFunctions = {
 
-  // TODO: This function needs to return the modified version of the document that it edited, not the original
   // This function takes the _id value of a user, and updates it's fields with the ones supplied in the payload
   update: function (req, res) {
-
-    userModel.findByIdAndUpdate(req.params._id, req.body)
+    userModel.findByIdAndUpdate(req.params._id, req.body, {new: true})
       .then(function (doc) {
         console.log('Successfully handled up date query!'.green)
         res.status(200).json(doc)
@@ -117,6 +115,8 @@ var userFunctions = {
       } else {
         var user = new userModel({
           _id: new mongoose.Types.ObjectId(),
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
           email: req.body.email,
           password: result
         });
