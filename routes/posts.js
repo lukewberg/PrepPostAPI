@@ -13,29 +13,35 @@ var postFunctions = {
     getAll: function (req, res) {
         postModel.find()
             .sort('-createdAt')
+            .populate('postedBy')
             .exec()
             .then(function (doc) {
                 console.log('Successfully handled getAll query!'.green)
                 res.status(200).json(doc)
             })
+            .catch(function(error) {
+                res.status(500).json({
+                    ERROR: error.message
+                })
+            })
     },
 
     post: function (req, res) {
-        var postModel = new Model({
+        var post = new postModel({
             _id: new mongoose.Types.ObjectId(),
             postedBy: req.body.postedBy,
             title: req.body.title,
             content: req.body.content,
         })
-        postModel.save()
+        post.save()
             .then(function (doc) {
                 console.log('Successfully handled postModel query!'.green)
-                res.status(201).json(doc)
+                res.status(201).json(doc.populate(postedBy))
             })
-            .catch(function (err) {
-                console.log(err.message.red)
+            .catch(function (error) {
+                console.log(error.message.red)
                 res.status(500).json({
-                    ERROR: err.message
+                    ERROR: error.message
                 })
             })
     },
@@ -50,13 +56,28 @@ var postFunctions = {
                 console.log('Successfully handled delete query!'.green)
                 res.status(200).json(doc)
             })
-            .catch(function (err) {
-                console.log(err.message.red)
+            .catch(function (error) {
+                console.log(error.message.red)
                 res.status(404).json({
-                    ERROR: err.message
+                    ERROR: error.message
                 })
             })
     },
+
+    update: function (req, res) {
+
+        Model.findByIdAndUpdate(req.params._id, req.body)
+            .then(function (doc) {
+                console.log('Successfully handled update query!'.green)
+                res.status(200).json(doc)
+            })
+            .catch(function (error) {
+                console.log(error.message.red)
+                res.status(500).json({
+                    ERROR: error.message
+                })
+            })
+    }
 }
 
 router.route('/')

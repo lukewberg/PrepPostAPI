@@ -19,11 +19,15 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        require: true
+        require: true,
+        select: false
     },
     rank: {
         // Must be either student, teacher, moderator, or administrator
-        type: String
+        type: String,
+        required: true,
+        enum: ['admin', 'moderator', 'teacher', 'student'],
+        default: 'student'
     }
 }, {
     timestamps: true

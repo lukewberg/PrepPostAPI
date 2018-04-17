@@ -63,6 +63,8 @@ var userFunctions = {
     userModel.find({
         email: req.body.email
       })
+      .select('+password')
+      .exec()
       .then(function (user) {
         if (user.length < 1) {
           res.status(401).json({
@@ -118,7 +120,8 @@ var userFunctions = {
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email,
-          password: result
+          password: result,
+          rank: req.body.rank
         });
         user.save()
           .then(function (doc) {
