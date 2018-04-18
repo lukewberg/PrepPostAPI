@@ -10,16 +10,40 @@ const config = require('../config.json')
 
 var postFunctions = {
 
+    comment: function (req, res) {
+        postModel.findByIdAndUpdate(
+                req.params._id, {
+                    $push: {
+                        'comments': {
+                            body: req.body.body,
+                            postedBy: req.body.postedBy
+                        }
+                    }
+                }, {
+                    new: true
+                })
+            .populate('comments.postedBy')
+            .exec()
+            .then(function (doc) {
+                res.status(201).json(doc)
+            })
+            .catch(function (error) {
+                res.status(500).json({
+                    ERROR: error
+                })
+            })
+    },
+
     getAll: function (req, res) {
         postModel.find()
             .sort('-createdAt')
-            .populate('postedBy')
+            .lean().populate('comments.postedBy', 'firstName lastName email rank')
             .exec()
             .then(function (doc) {
                 console.log('Successfully handled getAll query!'.green)
                 res.status(200).json(doc)
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 res.status(500).json({
                     ERROR: error.message
                 })
@@ -83,5 +107,8 @@ var postFunctions = {
 router.route('/')
     .get(authenticate, postFunctions.getAll)
     .post(authenticate, postFunctions.post)
+
+router.route('/:_id')
+    .post(authenticate, postFunctions.comment)
 
 module.exports = router;

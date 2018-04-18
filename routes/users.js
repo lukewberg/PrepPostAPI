@@ -82,6 +82,7 @@ var userFunctions = {
                 if (token) {
                   res.status(200).json({
                     MESSAGE: 'Authentication successful!',
+                    _id: user[0]._id,
                     TOKEN: token
                   })
                 } else {

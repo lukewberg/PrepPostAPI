@@ -26,11 +26,12 @@ const PostSchema = new Schema({
         body: String,
         postedBy: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'userSchema'
+            required: true,
+            ref: 'users'
         }
     }]
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('posts', PostSchema);
+module.exports = mongoose.model('posts',  PostSchema);
