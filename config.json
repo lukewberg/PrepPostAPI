@@ -1,5 +1,6 @@
 {
     "env":{
-        "JWT_KEY": "**goforthandsettheworldonfire**"
+        "JWT_KEY": "**goforthandsettheworldonfire**",
+        "DB_ADDRESS": "mongodb://localhost:27017/preppost"
     }
 }

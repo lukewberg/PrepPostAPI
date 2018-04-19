@@ -3,6 +3,14 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
@@ -11,10 +19,18 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        require: true
+        require: true,
+        select: false
+    },
+    rank: {
+        // Must be either student, teacher, moderator, or administrator
+        type: String,
+        required: true,
+        enum: ['admin', 'moderator', 'teacher', 'student'],
+        default: 'student'
     }
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('PrepPosts', UserSchema);
+module.exports = mongoose.model('users', UserSchema);

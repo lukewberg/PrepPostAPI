@@ -1,20 +1,70 @@
-var express = require('express');
-var router = express.Router();
-var bcrypt = require('bcrypt');
-var userModel = require('../models/userModel');
-var mongoose = require('mongoose');
-var color = require('colors')
-var jwt = require('jsonwebtoken')
-var authenticate = require('../middleware/user-auth')
-var config = require('../config.json')
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const userModel = require('../models/userModel');
+const mongoose = require('mongoose');
+const color = require('colors')
+const jwt = require('jsonwebtoken')
+const authenticate = require('../middleware/user-auth')
+const config = require('../config.json')
 
 var userFunctions = {
+
+  // This function takes the _id value of a user, and updates it's fields with the ones supplied in the payload
+  update: function (req, res) {
+    userModel.findByIdAndUpdate(req.params._id, req.body, {new: true})
+      .then(function (doc) {
+        console.log('Successfully handled up date query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
+
+  // This function simply finds all users in the database and returns them in the response
+  findAll: function (req, res) {
+    userModel.find()
+      .exec()
+      .then(function (doc) {
+        console.log('Successfully handled getAll query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
+
+  // This function finds one user based on that users unique _id key
+  findOne: function (req, res) {
+
+    userModel.findById(req.params._id)
+      .exec()
+      .then(function (doc) {
+        console.log('Successfully handled get query!'.green)
+        res.status(200).json(doc)
+      })
+      .catch(function (err) {
+        console.log(err.message.red)
+        res.status(500).json({
+          ERROR: err.message
+        })
+      })
+  },
 
   // This function will handle user login and will issue a token when successfully authenticated
   login: function (req, res) {
     userModel.find({
         email: req.body.email
       })
+      .select('+password')
+      .exec()
       .then(function (user) {
         if (user.length < 1) {
           res.status(401).json({
@@ -32,6 +82,7 @@ var userFunctions = {
                 if (token) {
                   res.status(200).json({
                     MESSAGE: 'Authentication successful!',
+                    _id: user[0]._id,
                     TOKEN: token
                   })
                 } else {
@@ -67,8 +118,11 @@ var userFunctions = {
       } else {
         var user = new userModel({
           _id: new mongoose.Types.ObjectId(),
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
           email: req.body.email,
-          password: result
+          password: result,
+          rank: req.body.rank
         });
         user.save()
           .then(function (doc) {
@@ -91,11 +145,11 @@ var userFunctions = {
         _id: req.params.userID
       })
       .then(function (doc) {
-        console.log('Successfully deleted user!'.green)
+        console.log('Successfully deleted user!')
         res.status(200).json(doc)
       })
       .catch(function (error) {
-        console.log(error.red)
+        console.log(error.message.red)
         res.status(500).json(error.message)
       })
   }
@@ -111,4 +165,13 @@ router.route('/login')
 router.route('/delete/:userID')
   .get(authenticate, userFunctions.delete)
 
-  module.exports = router;
+router.route('/find/:_id')
+  .get(authenticate, userFunctions.findOne)
+
+router.route('/find')
+  .get(authenticate, userFunctions.findAll)
+
+  router.route('/update/:_id')
+    .patch(authenticate, userFunctions.update)
+
+module.exports = router;
