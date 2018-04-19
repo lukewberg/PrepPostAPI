@@ -23,6 +23,7 @@ var postFunctions = {
                     new: true
                 })
             .populate('comments.postedBy')
+            .populate('postedBy')
             .exec()
             .then(function (doc) {
                 res.status(201).json(doc)
@@ -37,6 +38,7 @@ var postFunctions = {
     getAll: function (req, res) {
         postModel.find()
             .sort('-createdAt')
+            .populate('postedBy')
             .lean().populate('comments.postedBy', 'firstName lastName email rank')
             .exec()
             .then(function (doc) {
@@ -60,10 +62,10 @@ var postFunctions = {
         post.save()
             .then(function (doc) {
                 console.log('Successfully handled postModel query!'.green)
-                res.status(201).json(doc.populate(postedBy))
+                res.status(201).json(doc)
             })
             .catch(function (error) {
-                console.log(error.message.red)
+                console.log(error)
                 res.status(500).json({
                     ERROR: error.message
                 })
@@ -107,8 +109,9 @@ var postFunctions = {
 router.route('/')
     .get(authenticate, postFunctions.getAll)
     .post(authenticate, postFunctions.post)
+    .patch(authenticate, postFunctions.update)
 
-router.route('/:_id')
+router.route('/comment/:_id')
     .post(authenticate, postFunctions.comment)
 
 module.exports = router;
