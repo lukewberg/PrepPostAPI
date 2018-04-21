@@ -28,6 +28,12 @@ const UserSchema = new Schema({
         required: true,
         enum: ['admin', 'moderator', 'teacher', 'student'],
         default: 'student'
+    },
+
+    class: {
+        type: String,
+        required: true
+        
     }
 }, {
     timestamps: true

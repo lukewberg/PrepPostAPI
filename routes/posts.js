@@ -109,6 +109,8 @@ var postFunctions = {
 router.route('/')
     .get(authenticate, postFunctions.getAll)
     .post(authenticate, postFunctions.post)
+
+router.route('/update/:_id')
     .patch(authenticate, postFunctions.update)
 
 router.route('/comment/:_id')
