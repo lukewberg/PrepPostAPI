@@ -10,9 +10,49 @@ const config = require('../config.json')
 
 var userFunctions = {
 
+  getMessages: function (req, res) {
+    userModel.findById(req.body._id)
+      .exec()
+      .then(function (doc) {
+        res.status(200).json(doc.messages)
+      })
+      .catch(function (error) {
+        res.status(500).json({
+          ERROR: error.message
+        })
+      })
+  },
+
+  sendMessage: function (req, res) {
+    userModel.findByIdAndUpdate(req.body._id, {
+        $push: {
+          'messages': {
+            title: req.body.title,
+            body: req.body.body,
+            postedBy: req.body.postedBy
+          }
+        }
+      }, {
+        new: true
+      })
+      .exec()
+      .then(function () {
+        res.status(201).json({
+          MESSAGE: 'Message Sent!'
+        })
+      })
+      .catch(function (error) {
+        res.status(500).json({
+          ERROR: error.message
+        })
+      })
+  },
+
   // This function takes the _id value of a user, and updates it's fields with the ones supplied in the payload
   update: function (req, res) {
-    userModel.findByIdAndUpdate(req.params._id, req.body, {new: true})
+    userModel.findByIdAndUpdate(req.params._id, req.body, {
+        new: true
+      })
       .then(function (doc) {
         console.log('Successfully handled up date query!'.green)
         res.status(200).json(doc)
@@ -28,6 +68,7 @@ var userFunctions = {
   // This function simply finds all users in the database and returns them in the response
   findAll: function (req, res) {
     userModel.find()
+      .select('-messages -_id -__v -createdAt -updatedAt')
       .exec()
       .then(function (doc) {
         console.log('Successfully handled getAll query!'.green)
@@ -171,7 +212,11 @@ router.route('/find/:_id')
 router.route('/find')
   .get(authenticate, userFunctions.findAll)
 
-  router.route('/update/:_id')
-    .patch(authenticate, userFunctions.update)
+router.route('/update/:_id')
+  .patch(authenticate, userFunctions.update)
+
+router.route('/message')
+  .post(authenticate, userFunctions.sendMessage)
+  .get(authenticate, userFunctions.getMessages)
 
 module.exports = router;

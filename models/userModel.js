@@ -30,11 +30,22 @@ const UserSchema = new Schema({
         default: 'student'
     },
 
-    class: {
-        type: String,
-        required: true
-        
-    }
+    // class: {
+    //     type: String,
+    //     required: true  
+    // },
+
+    messages: [{
+        _id: mongoose.Schema.Types.ObjectId,
+        title: String,
+        body: String,
+        postedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'users'
+        },
+    }]
+
 }, {
     timestamps: true
 });

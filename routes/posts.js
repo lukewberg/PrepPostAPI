@@ -38,7 +38,7 @@ var postFunctions = {
     getAll: function (req, res) {
         postModel.find()
             .sort('-createdAt')
-            .populate('postedBy')
+            .lean().populate('postedBy', 'firstName lastName email rank')
             .lean().populate('comments.postedBy', 'firstName lastName email rank')
             .exec()
             .then(function (doc) {
