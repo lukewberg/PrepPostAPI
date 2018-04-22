@@ -219,4 +219,6 @@ router.route('/message')
   .post(authenticate, userFunctions.sendMessage)
   .get(authenticate, userFunctions.getMessages)
 
+  rec
+
 module.exports = router;
