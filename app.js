@@ -15,7 +15,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.env.DB_ADDRESS);
 
 mongoose.connection.once('open', function () {
-  console.log('Conenction to the database successful!'.cyan);
+  console.log('Connection to the database successful!'.cyan);
 });
 
 var app = express();
@@ -39,6 +39,7 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/user', require('./routes/users'));
 app.use('/posts', require('./routes/posts'));
+app.use('/schedule', require('./routes/schedule'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
