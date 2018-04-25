@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const ScheduleSchema = new Schema({
 
     _id: mongoose.Schema.Types.ObjectId,
+    title: String,
     date: Date,
     periods: [{
         period: String,

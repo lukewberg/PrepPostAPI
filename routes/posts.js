@@ -75,7 +75,7 @@ var postFunctions = {
     delete: function (req, res) {
 
         postModel.remove({
-                _id: req.params._id
+                _id: req.body._id
             })
             .exec()
             .then(function (doc) {
@@ -109,6 +109,7 @@ var postFunctions = {
 router.route('/')
     .get(authenticate, postFunctions.getAll)
     .post(authenticate, postFunctions.post)
+    .delete(authenticate, postFunctions.delete)
 
 router.route('/update/:_id')
     .patch(authenticate, postFunctions.update)
