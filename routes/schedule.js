@@ -15,6 +15,10 @@ let scheduleCache = null
 
 scheduleFunctions = {
 
+    getToday: function(req, res){
+        res.status(200).json(scheduleCache)
+    },
+
     get: function (req, res) {
         if (scheduleCache != null && scheduleCache.length > 0) {
             console.log('Using cached schedule JSON Object.'.green)
@@ -26,7 +30,6 @@ scheduleFunctions = {
                 .exec()
                 .then(function (doc) {
                     if (doc.length > 0) {
-                        scheduleCache = doc
                         res.status(200).json(doc)
                     } else {
                         res.status(200).json({
@@ -81,21 +84,51 @@ scheduleFunctions = {
     },
 
     post: function (req, res) {
-        var schedule = new scheduleModel({
-            _id: mongoose.Types.ObjectId(),
-            title: req.body.title,
-            date: req.body.date,
-            periods: req.body.periods
-        })
-        schedule.save()
-            .then(function (doc) {
-                res.status(201).json(doc)
+
+        if (scheduleCache != null && scheduleCache.length > 0 && scheduleCache[0].date == req.body.date) {
+            res.status(500).json({
+                ERROR: 'There is already a special schedule in effect!'
             })
-            .catch(function (error) {
-                res.status(500).json({
-                    ERROR: error.message
+        } else {
+            scheduleModel.find({
+                    date: req.body.date
                 })
-            })
+                .exec()
+                .then(function (doc) {
+                    if (doc.length > 0) {
+                        console.log('Schedule ERROR: Can only have one special schedule per day!')
+                        console.log('Loading schedule into cache.')
+                        scheduleCache = doc
+                        res.status(500).json({
+                            ERROR: 'Only one special schedule is permissible per day!'
+                        })
+                    } else {
+                        var schedule = new scheduleModel({
+                            _id: mongoose.Types.ObjectId(),
+                            title: req.body.title,
+                            date: req.body.date,
+                            periods: req.body.periods
+                        })
+                        schedule.save()
+                            .then(function (doc) {
+
+                                if (doc.date == req.body.date) {
+                                    console.log('Loading new schedule into cache.')
+                                    scheduleCache = doc
+                                    res.status(201).json(doc)
+                                } else {
+                                    console.log('Future schedule added!')
+                                    res.status(201).json(doc)
+                                }
+                            })
+                            .catch(function (error) {
+                                res.status(500).json({
+                                    ERROR: error.message
+                                })
+                            })
+                    }
+                })
+        }
     }
 }
 
@@ -144,5 +177,8 @@ scheduleModel.find({
 router.route('/')
     .get(authenticate, scheduleFunctions.get)
     .post(authenticate, scheduleFunctions.post)
+
+router.route('/today')
+    .get(authenticate, scheduleFunctions.getToday)
 
 module.exports = router
