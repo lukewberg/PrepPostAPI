@@ -9,7 +9,8 @@ const ScheduleSchema = new Schema({
     periods: [{
         period: String,
         startTime: Date,
-        endTime: Date
+        endTime: Date,
+        duration: Number
     }]
 })
 

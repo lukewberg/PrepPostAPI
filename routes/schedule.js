@@ -5,17 +5,18 @@ const scheduleModel = require('../models/scheduleModel');
 const mongoose = require('mongoose');
 const color = require('colors')
 const jwt = require('jsonwebtoken')
-const authenticate = require('../middleware/user-auth')
+const userAuth = require('../middleware/user-auth')
 const config = require('../config.json')
 const schedule = require('node-schedule')
 const moment = require('moment')
+const modAuth = require('../middleware/mod-auth')
 
 let scheduleCache = null
 
 
 scheduleFunctions = {
 
-    getToday: function(req, res){
+    getToday: function (req, res) {
         res.status(200).json(scheduleCache)
     },
 
@@ -61,6 +62,7 @@ scheduleFunctions = {
         scheduleModel.findByIdAndRemove(req.body._id)
             .exec()
             .then(function (doc) {
+                scheduleCache = null
                 res.status(200).json(doc)
             })
             .catch(function (error) {
@@ -71,7 +73,7 @@ scheduleFunctions = {
     },
 
     update: function (req, res) {
-        scheduleModel.findByIdAndUpdate(req.body._id, req.body)
+        scheduleModel.findByIdAndUpdate(req.params._id, req.body)
             .exec()
             .then(function (doc) {
                 res.status(200).json(doc)
@@ -112,11 +114,12 @@ scheduleFunctions = {
                         schedule.save()
                             .then(function (doc) {
 
-                                if (doc.date == req.body.date) {
+                                if (moment(doc.date).format('MM-DD-YYYY') == req.body.date) {
                                     console.log('Loading new schedule into cache.')
                                     scheduleCache = doc
                                     res.status(201).json(doc)
                                 } else {
+                                    console.log(doc.date + " : " + req.body.date)
                                     console.log('Future schedule added!')
                                     res.status(201).json(doc)
                                 }
@@ -174,11 +177,20 @@ scheduleModel.find({
         }
     })
 
+/*
+    Unused functions thus far:
+        get
+*/
+
 router.route('/')
-    .get(authenticate, scheduleFunctions.get)
-    .post(authenticate, scheduleFunctions.post)
+    .get(userAuth, scheduleFunctions.get)
+    .post(modAuth, scheduleFunctions.post)
+    .delete(modAuth, scheduleFunctions.remove)
 
 router.route('/today')
-    .get(authenticate, scheduleFunctions.getToday)
+    .get(userAuth, scheduleFunctions.getToday)
+
+router.route('/:_id')
+    .patch(modAuth, scheduleFunctions.update)
 
 module.exports = router

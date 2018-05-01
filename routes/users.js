@@ -5,8 +5,9 @@ const userModel = require('../models/userModel');
 const mongoose = require('mongoose');
 const color = require('colors')
 const jwt = require('jsonwebtoken')
-const authenticate = require('../middleware/user-auth')
+const userAuth = require('../middleware/user-auth')
 const config = require('../config.json')
+const modAuth = require('../middleware/mod-auth')
 
 var userFunctions = {
 
@@ -85,7 +86,7 @@ var userFunctions = {
   // This function finds one user based on that users unique _id key
   findOne: function (req, res) {
 
-    userModel.findById(req.params._id)
+    userModel.findById(req.body._id)
       .exec()
       .then(function (doc) {
         console.log('Successfully handled get query!'.green)
@@ -116,7 +117,8 @@ var userFunctions = {
             if (result) {
               jwt.sign({
                 email: user[0].email,
-                _id: user[0]._id
+                _id: user[0]._id,
+                rank: user[0].rank
               }, config.env.JWT_KEY, {
                 expiresIn: '1h'
               }, function (error, token) {
@@ -183,7 +185,7 @@ var userFunctions = {
   // This functiion deletes a user based solely on that users _id
   delete: function (req, res) {
     userModel.remove({
-        _id: req.params.userID
+        _id: req.body._id
       })
       .then(function (doc) {
         console.log('Successfully deleted user!')
@@ -203,20 +205,17 @@ router.route('/signup')
 router.route('/login')
   .post(userFunctions.login)
 
-router.route('/delete/:userID')
-  .get(authenticate, userFunctions.delete)
-
-router.route('/find/:_id')
-  .get(authenticate, userFunctions.findOne)
+router.route('/delete')
+  .delete(modAuth, userFunctions.delete)
 
 router.route('/find')
-  .get(authenticate, userFunctions.findAll)
+  .get(userAuth, userFunctions.findAll)
 
 router.route('/update/:_id')
-  .patch(authenticate, userFunctions.update)
+  .patch(modAuth, userFunctions.update)
 
 router.route('/message')
-  .post(authenticate, userFunctions.sendMessage)
-  .get(authenticate, userFunctions.getMessages)
+  .post(modAuth, userFunctions.sendMessage)
+  .get(userAuth, userFunctions.getMessages)
 
 module.exports = router;

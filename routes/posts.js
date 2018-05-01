@@ -5,8 +5,9 @@ const postModel = require('../models/postModel');
 const mongoose = require('mongoose');
 const color = require('colors')
 const jwt = require('jsonwebtoken')
-const authenticate = require('../middleware/user-auth')
+const userAuth = require('../middleware/user-auth')
 const config = require('../config.json')
+const modAuth = require('../middleware/mod-auth')
 
 var postFunctions = {
 
@@ -107,14 +108,14 @@ var postFunctions = {
 }
 
 router.route('/')
-    .get(authenticate, postFunctions.getAll)
-    .post(authenticate, postFunctions.post)
-    .delete(authenticate, postFunctions.delete)
+    .get(userAuth, postFunctions.getAll)
+    .post(modAuth, postFunctions.post)
+    .delete(modAuth, postFunctions.delete)
 
 router.route('/update/:_id')
-    .patch(authenticate, postFunctions.update)
+    .patch(modAuth, postFunctions.update)
 
 router.route('/comment/:_id')
-    .post(authenticate, postFunctions.comment)
+    .post(userAuth, postFunctions.comment)
 
 module.exports = router;
