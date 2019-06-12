@@ -9,6 +9,9 @@ const userAuth = require('../middleware/user-auth')
 const config = require('../config.json')
 const modAuth = require('../middleware/mod-auth')
 
+router.use(require('../middleware/user-auth'))
+router.use(require('../middleware/mod-auth'))
+
 var postFunctions = {
 
     comment: function (req, res) {
@@ -108,14 +111,14 @@ var postFunctions = {
 }
 
 router.route('/')
-    .get(userAuth, postFunctions.getAll)
-    .post(modAuth, postFunctions.post)
-    .delete(modAuth, postFunctions.delete)
+    .get(postFunctions.getAll)
+    .post(postFunctions.post)
+    .delete(postFunctions.delete)
 
 router.route('/update/:_id')
-    .patch(modAuth, postFunctions.update)
+    .patch(postFunctions.update)
 
 router.route('/comment/:_id')
-    .post(userAuth, postFunctions.comment)
+    .post(postFunctions.comment)
 
 module.exports = router;

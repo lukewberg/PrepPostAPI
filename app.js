@@ -12,7 +12,7 @@ const config = require('./config.json')
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(config.env.DB_ADDRESS);
+mongoose.connect(config.env.DB_ADDRESS, {useNewUrlParser: true});
 
 mongoose.connection.once('open', function () {
   console.log('Connection to the database successful!'.cyan);
