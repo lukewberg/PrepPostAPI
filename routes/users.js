@@ -5,9 +5,8 @@ const userModel = require('../models/userModel');
 const mongoose = require('mongoose');
 const color = require('colors')
 const jwt = require('jsonwebtoken')
-const userAuth = require('../middleware/user-auth')
 const config = require('../config.json')
-const modAuth = require('../middleware/mod-auth')
+
 
 var userFunctions = {
 
@@ -206,16 +205,16 @@ router.route('/login')
   .post(userFunctions.login)
 
 router.route('/delete')
-  .delete(modAuth, userFunctions.delete)
+  .delete(userFunctions.delete)
 
 router.route('/find')
-  .get(userAuth, userFunctions.findAll)
+  .get(userFunctions.findAll)
 
 router.route('/update/:_id')
-  .patch(modAuth, userFunctions.update)
+  .patch(userFunctions.update)
 
 router.route('/message')
-  .post(modAuth, userFunctions.sendMessage)
-  .get(userAuth, userFunctions.getMessages)
+  .post(userFunctions.sendMessage)
+  .get(userFunctions.getMessages)
 
 module.exports = router;

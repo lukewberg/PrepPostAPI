@@ -1,16 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const postModel = require('../models/postModel');
 const mongoose = require('mongoose');
 const color = require('colors')
-const jwt = require('jsonwebtoken')
-const userAuth = require('../middleware/user-auth')
-const config = require('../config.json')
-const modAuth = require('../middleware/mod-auth')
 
-router.use(require('../middleware/user-auth'))
-router.use(require('../middleware/mod-auth'))
 
 var postFunctions = {
 
@@ -96,7 +89,7 @@ var postFunctions = {
 
     update: function (req, res) {
 
-        Model.findByIdAndUpdate(req.params._id, req.body)
+        postModel.findByIdAndUpdate(req.params._id, req.body)
             .then(function (doc) {
                 console.log('Successfully handled update query!'.green)
                 res.status(200).json(doc)

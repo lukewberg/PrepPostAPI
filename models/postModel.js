@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/*
 const TemplateAttachmentSchema = new Schema({
     name: String,
     data: Buffer,
     type: String
-})
-
+}
+*/
 const PostSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     postedBy: {

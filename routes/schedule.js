@@ -4,9 +4,7 @@ const bcrypt = require('bcrypt');
 const scheduleModel = require('../models/scheduleModel');
 const mongoose = require('mongoose');
 const color = require('colors')
-const jwt = require('jsonwebtoken')
 const userAuth = require('../middleware/user-auth')
-const config = require('../config.json')
 const schedule = require('node-schedule')
 const moment = require('moment')
 const modAuth = require('../middleware/mod-auth')
@@ -14,7 +12,7 @@ const modAuth = require('../middleware/mod-auth')
 let scheduleCache = null
 
 
-scheduleFunctions = {
+const scheduleFunctions = {
 
     getToday: function (req, res) {
         res.status(200).json(scheduleCache)
