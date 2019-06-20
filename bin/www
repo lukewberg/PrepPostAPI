@@ -6,8 +6,10 @@
 
 var app = require('../app');
 var debug = require('debug')('preppostapi:server');
-var http = require('http');
+var https = require('https');
 var process = require('process')
+var config = require('../config')
+var fs = require('fs')
 
 /**
  * Get port from environment and store in Express.
@@ -20,7 +22,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer({
+  key: fs.readFileSync(config.KEY_PATH),
+  cert: fs.readFileSync(config.CERT_PATH),
+}, app);
 
 /**
  * Listen on provided port, on all network interfaces.

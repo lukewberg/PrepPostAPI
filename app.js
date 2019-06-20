@@ -5,13 +5,14 @@ const logger = require('morgan');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const colors = require('colors');
-const config = require('./config.json')
-
-
+const config = require('./config')
+const helmet = require('helmet')
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(config.env.DB_ADDRESS, {useNewUrlParser: true});
+mongoose.connect(config.DB_ADDRESS, {
+  useNewUrlParser: true
+});
 
 mongoose.connection.once('open', function () {
   console.log('Connection to the database successful!'.cyan);
@@ -19,6 +20,7 @@ mongoose.connection.once('open', function () {
 
 var app = express();
 
+app.use(helmet())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyparser.urlencoded({
@@ -36,8 +38,8 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', require('./routes/index'));
-app.use('/user', require('./routes/users', './middleware/mod-auth', './middleware/user-auth'));
-app.use('/posts', require('./routes/posts', './middleware/mod-auth', './middleware/user-auth'));
+app.use('/user', require('./routes/users'));
+app.use('/posts', require('./routes/posts'));
 app.use('/schedule', require('./routes/schedule'));
 
 // catch 404 and forward to error handler

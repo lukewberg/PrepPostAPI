@@ -5,10 +5,10 @@ const userModel = require('../models/userModel');
 const mongoose = require('mongoose');
 const color = require('colors')
 const jwt = require('jsonwebtoken')
-const config = require('../config.json')
+const config = require('../config')
 
 
-var userFunctions = {
+const userFunctions = {
 
   getMessages: function (req, res) {
     userModel.findById(req.body._id)
@@ -118,7 +118,7 @@ var userFunctions = {
                 email: user[0].email,
                 _id: user[0]._id,
                 rank: user[0].rank
-              }, config.env.JWT_KEY, {
+              }, config.JWT_KEY, {
                 expiresIn: '1h'
               }, function (error, token) {
                 if (token) {
