@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const scheduleModel = require('../models/scheduleModel');
 const mongoose = require('mongoose');
 const color = require('colors')
-const userAuth = require('../middleware/user-auth')
 const schedule = require('node-schedule')
 const moment = require('moment')
-const modAuth = require('../middleware/mod-auth')
+const userAuth = require('../middleware/userAuth')
+const modAuth = require('../middleware/modAuth')
 
 let scheduleCache = null
 
@@ -170,8 +169,6 @@ scheduleModel.find({
             scheduleCache = doc
             console.log('Schedule loaded into cache!'.cyan)
             console.log(doc)
-        } else {
-            console.log('No special schedule found for today.'.cyan)
         }
     })
 

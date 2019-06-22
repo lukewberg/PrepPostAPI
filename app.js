@@ -7,19 +7,31 @@ const mongoose = require('mongoose');
 const colors = require('colors');
 const config = require('./config')
 const helmet = require('helmet')
+const process = require('process')
 
 mongoose.Promise = global.Promise;
 
 mongoose.connect(config.DB_ADDRESS, {
-  useNewUrlParser: true
-});
+  useNewUrlParser: true,
+  useFindAndModify: false
+}).then(
+  console.log(`Worker ${process.pid} is online`)
+)
 
+mongoose.set('debug', true)
+
+/*
 mongoose.connection.once('open', function () {
   console.log('Connection to the database successful!'.cyan);
 });
+*/
 
 var app = express();
 
+app.use(function(req, res, next){
+  console.log(`${req.ip} handled by worker ${process.pid}`)
+  next()
+})
 app.use(helmet())
 app.use(logger('dev'));
 app.use(express.json());

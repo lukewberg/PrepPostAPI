@@ -3,6 +3,8 @@ const router = express.Router();
 const postModel = require('../models/postModel');
 const mongoose = require('mongoose');
 const color = require('colors')
+const modAuth = require('../middleware/modAuth')
+const userAuth = require('../middleware/userAuth')
 
 
 var postFunctions = {
@@ -71,7 +73,7 @@ var postFunctions = {
 
     delete: function (req, res) {
 
-        postModel.remove({
+        postModel.deleteOne({
                 _id: req.body._id
             })
             .exec()
@@ -104,14 +106,14 @@ var postFunctions = {
 }
 
 router.route('/')
-    .get(postFunctions.getAll)
-    .post(postFunctions.post)
-    .delete(postFunctions.delete)
+    .get(userAuth, postFunctions.getAll)
+    .post(userAuth, postFunctions.post)
+    .delete(modAuth, postFunctions.delete)
 
 router.route('/update/:_id')
-    .patch(postFunctions.update)
+    .patch(userAuth, postFunctions.update)
 
 router.route('/comment/:_id')
-    .post(postFunctions.comment)
+    .post(userAuth, postFunctions.comment)
 
 module.exports = router;
