@@ -18,7 +18,7 @@ mongoose.connect(config.DB_ADDRESS, {
   console.log(`Worker ${process.pid} is online`)
 )
 
-mongoose.set('debug', true)
+//mongoose.set('debug', true)
 
 /*
 mongoose.connection.once('open', function () {
@@ -52,7 +52,6 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/user', require('./routes/users'));
 app.use('/posts', require('./routes/posts'));
-app.use('/schedule', require('./routes/schedule'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
