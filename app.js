@@ -13,10 +13,13 @@ mongoose.Promise = global.Promise;
 
 mongoose.connect(config.DB_ADDRESS, {
   useNewUrlParser: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useUnifiedTopology: true
 }).then(
   console.log(`Worker ${process.pid} is online`)
-)
+).catch( error => {
+  console.log(error)
+})
 
 //mongoose.set('debug', true)
 

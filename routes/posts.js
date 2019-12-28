@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController')
-const color = require('colors')
 const modAuth = require('../middleware/modAuth')
 const userAuth = require('../middleware/userAuth')
 
